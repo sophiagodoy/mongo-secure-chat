@@ -1,6 +1,7 @@
 from db import get_db
 import bcrypt #Criptografia apenas para senhas (digitar no terminal: "python -m pip install bcrypt" para conseguir usar)
 from cryptography.fernet import Fernet #Criptografia para mensagens
+from bson.binary import Binary
 import hashlib #Gerar chaves seguras usando a chave do usuario
 import base64
 
@@ -29,27 +30,26 @@ class User:
 class Message:
     db = get_db()
 
-    def __init__(self, sender, receiver, messageContent):
-        self.__sender = sender
-        self.__receiver = receiver
-        self.___messageContent = messageContent
-        self.__status = "Nova"
-        self.__saveNewMessage()
+    def __init__(self, sender, receiver, messageContent: bytes):
+        self._sender = sender
+        self._receiver = receiver
+        self.messageContent = base64.b64encode(messageContent).decode()
+        self._status = "Nova"
+        self._saveNewMessage()
 
-    def __saveNewMessage(self):
+    def _saveNewMessage(self):
         self.db.Messages.insert_one({
-            "Sender": self.__sender,
-            "Receiver": self.__receiver,
-            "Content": self.___messageContent,
-            "Status": self.__status
+            "Sender": self._sender,
+            "Receiver": self._receiver,
+            "Content": self.messageContent,
+            "Status": self._status
         })
 
 # Método que criptografa o conteúdo da mensagem 
 def encryptMessage(messageContent, key):
     fernet_key = generate_fernet_key(key)
     fernet = Fernet(fernet_key)
-    encrypt_message = fernet.encrypt(messageContent.encode())
-    return encrypt_message
+    return fernet.encrypt(messageContent.encode()) 
 
 # Descriptografa uma mensagem, usando a chave que o usuário digitar
 def decryptMessage(message, keyTest): # parametro message é apenas o conteudo criptografado da mensagem, keyTest é a chave que quem vai ler tentou usar
@@ -128,10 +128,10 @@ def sendMessage(sender):
         return
 
     # Criptografa a mensagem
-    message = encryptMessage(message, secret_key)
-
+    messageC = encryptMessage(message, secret_key)
+    print(messageC)
     # Salva no banco
-    mensagem = Message(sender, receiver, message)
+    mensagem = Message(sender, receiver, messageC)
 
     print("Mensagem criptografada e enviada com sucesso para", receiver)
     return
@@ -176,24 +176,11 @@ def signIn():
         
         # Verifica se o usuário existe no banco
         user = db.Users.find_one({"username": username})
+        if user:
+            correctPassword = verify_password(password, user["password"])
         
-        if not user:  # se não achou o usuário
-            print("Usuário não encontrado.")
-            num = int(input("Digite 1 para se cadastrar e 2 para tentar novamente: "))
-            if num == 1:
-                signUp()
-                return
-            elif num == 2:
-                continue
-            else:
-                print("Opção inválida!")
-                return
-
-        # Se o usuário existe, vai verificar a senha
-        correctPassword = verify_password(password, user["password"])
-        
-        if not correctPassword:  # senha incorreta
-            print("Senha incorreta!")
+        if not user or not correctPassword:  # se não achou o usuário ou senha errada
+            print("Usuário ou senha incorretos.")
             num = int(input("Digite 1 para se cadastrar e 2 para tentar novamente: "))
             if num == 1:
                 signUp()
@@ -233,7 +220,7 @@ def main():
             signIn()
         else:
             signUp()
-        menu = menuInicial()
+        menu = menuInicial() 
 
 # Executa apenas se rodar direto este arquivo
 if __name__ == "__main__":
