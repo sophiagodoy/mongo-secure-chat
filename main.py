@@ -4,6 +4,7 @@ from cryptography.fernet import Fernet #Criptografia para mensagens
 from bson.binary import Binary
 import hashlib #Gerar chaves seguras usando a chave do usuario
 import base64
+from datetime import datetime
 
 # Definindo a classe que representa o usuário 
 class User:
@@ -34,15 +35,17 @@ class Message:
         self._sender = sender
         self._receiver = receiver
         self.messageContent = base64.b64encode(messageContent).decode()
-        self._status = "Nova"
+        self._status = "nova"
+        self._timestamp = datetime.now()   
         self._saveNewMessage()
 
     def _saveNewMessage(self):
         self.db.Messages.insert_one({
-            "Sender": self._sender,
-            "Receiver": self._receiver,
-            "Content": self.messageContent,
-            "Status": self._status
+            "sender": self._sender,
+            "receiver": self._receiver,
+            "content": self.messageContent,
+            "status": self._status,
+            "timestamp": self._timestamp
         })
 
 # Método que criptografa o conteúdo da mensagem 
@@ -203,13 +206,73 @@ def signIn():
                 if escolha == "1":
                     sendMessage(user["username"])
                 elif escolha == "2":
-                    print("Aqui chamaria a função de ler mensagens...") # ARTHUR - CHAMAR FUNÇÃO DE LER MENSAGENS AQUI 
+                   readMessages(user["username"])
                 elif escolha == "0":
                     print("Saindo do chat...")
                     break
                 else:
                     print("Opção inválida, tente novamente.")
             return
+        
+        
+def readMessages(username):
+    db = get_db()
+
+    # pega só mensagens NOVAS desse usuário, mais recentes primeiro
+    messages = list(
+        db.Messages.find({"receiver": username, "status": "nova"}).sort("timestamp", -1)
+    )
+
+    if not messages:
+        print("\nVocê não tem mensagens novas.")
+        return
+
+    print(f"\nVocê tem {len(messages)} mensagem(ns) nova(s):")
+    for i, msg in enumerate(messages, 1):
+        ts = msg.get("timestamp")
+        when = ts.strftime("%d/%m/%Y %H:%M:%S") if ts else "sem data"
+        print(f"[{i}] De: {msg['sender']} - {when}")
+
+    # escolhe uma pra abrir
+    choice = input("\nNúmero da mensagem para abrir: ").strip()
+    if not choice.isdigit():
+        print("Entrada inválida.")
+        return
+
+    idx = int(choice)
+    if idx < 1 or idx > len(messages):
+        print("Número inválido.")
+        return
+    
+    # Pego o documento escolhido
+    selected = messages[idx - 1]
+
+    # pede a chave e tenta descriptografar
+    secret = input("Digite a chave secreta: ").strip()
+    if not secret:
+        print("A chave secreta não pode ser vazia.")
+        return
+
+    # 1) tira do Base64 -> bytes criptografados
+    try:
+        encrypted_bytes = base64.b64decode(selected["content"])
+    except Exception:
+        print("Formato inválido da mensagem (Base64).")
+        return
+
+    # 2) tenta descriptografar com a chave
+    try:
+        f = Fernet(generate_fernet_key(secret))
+        text = f.decrypt(encrypted_bytes).decode()
+        print("\n✅ Mensagem descriptografada com sucesso:")
+        print(text)
+
+        # 3) marca como lida
+        db.Messages.update_one({"_id": selected["_id"]}, {"$set": {"status": "lida"}})
+        print("✅ Mensagem marcada como lida.")
+    except Exception:
+        print("❌ Chave incorreta! Não foi possível abrir a mensagem.")
+
 
 # Função principal do programa         
 def main():
