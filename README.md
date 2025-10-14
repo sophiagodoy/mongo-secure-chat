@@ -9,7 +9,7 @@
 - **MongoDB Atlas**
 - **Cryptography / Fernet** 
   
-Principais Funcionalidades
+## Principais Funcionalidades
 - Cadastro e login de usuários com senha criptografada
 - Envio e recebimento de mensagens cifradas
 - Validação de chave secreta para leitura de mensagens
