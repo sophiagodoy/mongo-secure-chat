@@ -1,8 +1,8 @@
 # 🔐 Chat Seguro com Python e MongoDB
 
 ## Sobre o Projeto
-Este projeto é um **chat seguro via terminal (CLI)** desenvolvido em **Python**, utilizando **MongoDB Atlas** como banco de dados.  
-As mensagens são **criptografadas com uma chave secreta**, garantindo que apenas quem a possui consiga ler o conteúdo.
+- Este projeto é um **chat seguro via terminal (CLI)** desenvolvido em **Python**, utilizando **MongoDB Atlas** como banco de dados.  
+- As mensagens são **criptografadas com uma chave secreta**, garantindo que apenas quem a possui consiga ler o conteúdo.
 
 ## Tecnologias Utilizadas
 - **Python**
@@ -18,9 +18,10 @@ Principais Funcionalidades
 ## Como Executar
 2. Clone este repositório:
    ```sh
-   git@github.com:sophiagodoy/Dice-Roller.git
+   git@github.com:sophiagodoy/mongo-secure-chat.git
 
 2. Instale as dependências necessárias
-3. Para executar o programa faça
+   
+4. Para executar o programa faça
    ```sh
    python main.py
