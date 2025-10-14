@@ -92,13 +92,13 @@ def readMessages(username):
         try:        
             text = decryptMessage(encrypted_bytes, secret)
             if text == None:
-                print("❌ Chave incorreta! ")
+                print("Chave incorreta! ")
                 continue
-            print("\n✅ Mensagem descriptografada com sucesso:")
+            print("\nMensagem descriptografada com sucesso:")
             print(text)
 
             # 3) marca como lida
             db.Messages.update_one({"_id": selected["_id"]}, {"$set": {"status": "lida"}})
-            print("✅ Mensagem marcada como lida.")
+            print("Mensagem marcada como lida.")
         except Exception:
             print("Não foi possível abrir a mensagem.")

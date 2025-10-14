@@ -47,7 +47,7 @@ def signIn():
         
         if not user or not correctPassword:  # se não achou o usuário ou senha errada
             print("Usuário ou senha incorretos.")
-            num = int(input("Digite 1 para se cadastrar e 2 para tentar novamente: "))
+            num = int(input("Digite 1 para tentar novamente ou 2 para se cadastrar: "))
             if num == 1:
                 signUp()
                 return
