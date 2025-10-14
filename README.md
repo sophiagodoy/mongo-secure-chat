@@ -22,6 +22,6 @@
 
 2. Instale as dependências necessárias
    
-4. Para executar o programa faça
+4. Para executar o programa faça:
    ```sh
    python main.py
