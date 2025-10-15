@@ -42,12 +42,15 @@ def signIn():
         
         # Verifica se o usuário existe no banco
         user = db.Users.find_one({"username": username})
+
         if user:
             correctPassword = verifyPassword(password, user["password"])
         
-        if not user or not correctPassword:  # se não achou o usuário ou senha errada
+        if not user or not correctPassword:  
             print("Usuário ou senha incorretos.")
+            
             num = int(input("Digite 1 para tentar novamente ou 2 para se cadastrar: "))
+            
             if num == 1:
                 signUp()
                 return

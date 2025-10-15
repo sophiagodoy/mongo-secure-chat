@@ -28,6 +28,7 @@ class User:
 class Message:
     db = get_db()
 
+    # Constrói o objeto de mensagem e salva automaticamente no banco de dados
     def __init__(self, sender, receiver, messageContent: bytes):
         self._sender = sender
         self._receiver = receiver
@@ -35,7 +36,8 @@ class Message:
         self._status = "nova"
         self._timestamp = datetime.now()   
         self._saveNewMessage()
-
+    
+    # Salva a mensagem no banco de dados 
     def _saveNewMessage(self):
         self.db.Messages.insert_one({
             "sender": self._sender,

@@ -3,20 +3,25 @@ from messagain import sendMessage, readMessages
 
 # Menu inicial do programa 
 def menuInicial():
+    print("\nBem-vindo ao Chat Seguro com Python e MongoDB!")
     while True:
-        print("\n===== MENU INICIAL =====")
+        print("===== MENU INICIAL =====")
         print("[1] ENTRAR")
         print("[2] CADASTRAR-SE")
-        print("QUALQUER TECLA PARA SAIR")
+        print("[0] SAIR")
         menu = int(input("Escolha: "))
 
         if menu == 1:
             userIn = signIn()
             if userIn:
                 menuPrincipal(userIn)
-        else:
+        elif menu == 2:
             signUp()
-    
+        elif menu == 0:
+            print("Saindo do chat...")
+            break
+        else:
+            print("Opção inválida, tente novamente!")
 
 # Menu principal do programa 
 def menuPrincipal(user):

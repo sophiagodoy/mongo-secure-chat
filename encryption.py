@@ -1,7 +1,7 @@
-import bcrypt #Criptografia apenas para senhas (digitar no terminal: "python -m pip install bcrypt" para conseguir usar)
-from cryptography.fernet import Fernet #Criptografia para mensagens
+import bcrypt # Criptografia apenas para senhas (digitar no terminal: "python -m pip install bcrypt" para conseguir usar)
+from cryptography.fernet import Fernet # Criptografia para mensagens
 from bson.binary import Binary
-import hashlib #Gerar chaves seguras usando a chave do usuario
+import hashlib # Gerar chaves seguras usando a chave do usuario
 import base64
 
 # Método que criptografa o conteúdo da mensagem 
@@ -11,7 +11,7 @@ def encryptMessage(messageContent, key):
     return fernet.encrypt(messageContent.encode()) 
 
 # Descriptografa uma mensagem, usando a chave que o usuário digitar
-def decryptMessage(message, keyTest): # parametro message é apenas o conteudo criptografado da mensagem, keyTest é a chave que quem vai ler tentou usar
+def decryptMessage(message, keyTest): # Parametro message é apenas o conteudo criptografado da mensagem, keyTest é a chave que quem vai ler tentou usar
     fernet_teste = Fernet(generateFernetKey(keyTest))
     try:
         decrypt_message = fernet_teste.decrypt(message).decode()
@@ -21,15 +21,15 @@ def decryptMessage(message, keyTest): # parametro message é apenas o conteudo c
 
 # Criptografa a senha do usuário antes de salvar
 def hashPassword(password):
-        salt = bcrypt.gensalt()  # gera um salt seguro
+        salt = bcrypt.gensalt()  # Gera um salt seguro
         hashed = bcrypt.hashpw(password.encode(), salt)
-        return hashed.decode()  # salva como string no banco
+        return hashed.decode()  # Salva como string no banco
 
 # Verifica se a senha digitada bate com a que está no banco
 def verifyPassword(passwordInput, otherPassword):
         return bcrypt.checkpw(passwordInput.encode(), otherPassword.encode())
 
 # Gera uma chave Fernet válida a partir da senha simples digitada
-def generateFernetKey(user_key: str) -> bytes: #gera uma chave segura usando a digitada pelo usuario
+def generateFernetKey(user_key: str) -> bytes: # Gera uma chave segura usando a digitada pelo usuario
     hash_key = hashlib.sha256(user_key.encode()).digest()
     return base64.urlsafe_b64encode(hash_key)
