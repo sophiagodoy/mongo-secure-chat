@@ -25,11 +25,10 @@ def hashPassword(password):
         hashed = bcrypt.hashpw(password.encode(), salt)
         return hashed.decode()  # Salva como string no banco
 
-# Verifica se a senha digitada bate com a que está no banco
+# Verifica se a senha digitada esta correta
 def verifyPassword(passwordInput, otherPassword):
         return bcrypt.checkpw(passwordInput.encode(), otherPassword.encode())
 
-# Gera uma chave Fernet válida a partir da senha simples digitada
 def generateFernetKey(user_key: str) -> bytes: # Gera uma chave segura usando a digitada pelo usuario
     hash_key = hashlib.sha256(user_key.encode()).digest()
     return base64.urlsafe_b64encode(hash_key)
